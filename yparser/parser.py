@@ -1,5 +1,9 @@
 import os
-import pandas as pd
+import csv
+try:
+    import pandas as pd
+except ImportError:  # pragma: no cover - optional dependency
+    pd = None
 
 from yparser.src.downloader.downloader import DownloaderPool
 from yparser.src.parser.yandex_parser import YandexParserPool
@@ -50,8 +54,21 @@ class YParser:
         if not self.logger.queue.empty():
             self.logger.queue.join()
         #print('end logger')
-        df1 = pd.DataFrame(self.logger.df)
-        df2 = pd.DataFrame(self.logger.save_df)
-        df = pd.merge(df1, df2, on='url', how='inner')
-        df.to_csv(os.path.join(self.save_path, 'link.csv'), index=False)
+        output_file = os.path.join(self.save_path, 'link.csv')
+        if pd is not None:
+            df1 = pd.DataFrame(self.logger.df)
+            df2 = pd.DataFrame(self.logger.save_df)
+            df = pd.merge(df1, df2, on='url', how='inner')
+            df.to_csv(output_file, index=False)
+        else:
+            save_map = {item['url']: item.get('save_path', '') for item in self.logger.save_df}
+            with open(output_file, 'w', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(['query_url', 'url', 'save_path'])
+                for item in self.logger.df:
+                    writer.writerow([
+                        item.get('query_url', ''),
+                        item.get('url', ''),
+                        save_map.get(item.get('url', ''), ''),
+                    ])
 
