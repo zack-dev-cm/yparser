@@ -18,9 +18,9 @@ def init_wd(headless=True):
         chrome_options.add_argument('--disable-dev-shm-usage')
     if IN_COLAB:
         download_incolab_chromedriver()
-        wd = webdriver.Chrome('chromedriver', chrome_options=chrome_options)
+        wd = webdriver.Chrome('chromedriver', options=chrome_options)
     else:
-        wd = webdriver.Chrome(executable_path=ChromeDriverManager().install(), chrome_options=chrome_options)
+        wd = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=chrome_options)
     return wd
 
 
