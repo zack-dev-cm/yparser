@@ -1,4 +1,5 @@
 import os
+import logging
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -6,6 +7,8 @@ from selenium.webdriver.chrome.service import Service
 from yparser.src.parser.js_code import JS_DROP_FILE
 from yparser.src.consts import IN_COLAB
 from yparser.src.utils.colab_downloader import download_incolab_chromedriver
+
+logger = logging.getLogger(__name__)
 
 
 def init_wd(headless=True):
@@ -24,13 +27,20 @@ def init_wd(headless=True):
         chromedriver_path = "/usr/bin/chromedriver"
         if not os.path.exists(chromedriver_path):
             alt_path = "/usr/lib/chromium-browser/chromedriver"
-            chromedriver_path = (
-                alt_path if os.path.exists(alt_path) else "chromedriver"
-            )
-        service = Service(chromedriver_path)
+            chromedriver_path = alt_path if os.path.exists(alt_path) else None
+        if chromedriver_path and os.path.exists(chromedriver_path):
+            logger.info("Using system chromedriver at %s", chromedriver_path)
+            service = Service(chromedriver_path)
+        else:
+            logger.warning("Chromedriver not found, falling back to webdriver_manager")
+            service = Service(ChromeDriverManager().install())
     else:
         service = Service(ChromeDriverManager().install())
-    wd = webdriver.Chrome(service=service, options=chrome_options)
+    try:
+        wd = webdriver.Chrome(service=service, options=chrome_options)
+    except Exception as e:
+        logger.exception("Error initializing webdriver: %s", e)
+        raise
     return wd
 
 
