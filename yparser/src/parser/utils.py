@@ -19,7 +19,11 @@ def init_wd(headless=True):
         chrome_options.add_argument('--disable-dev-shm-usage')
     if IN_COLAB:
         download_incolab_chromedriver()
-        service = Service('chromedriver')
+        chromedriver_path = '/usr/bin/chromedriver'
+        if not os.path.exists(chromedriver_path):
+            alt_path = '/usr/lib/chromium-browser/chromedriver'
+            chromedriver_path = alt_path if os.path.exists(alt_path) else 'chromedriver'
+        service = Service(chromedriver_path)
     else:
         service = Service(ChromeDriverManager().install())
     wd = webdriver.Chrome(service=service, options=chrome_options)
