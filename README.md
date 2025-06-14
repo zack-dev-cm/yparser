@@ -13,6 +13,7 @@ pip install -r requirements.txt
 
 # optional: install pandas if you want DataFrame output
 pip install pandas
+pip install -e .
 ```
 
 ## Usage
