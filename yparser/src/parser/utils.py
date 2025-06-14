@@ -1,3 +1,4 @@
+import os
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -22,7 +23,9 @@ def init_wd(headless=True):
         chromedriver_path = '/usr/bin/chromedriver'
         if not os.path.exists(chromedriver_path):
             alt_path = '/usr/lib/chromium-browser/chromedriver'
-            chromedriver_path = alt_path if os.path.exists(alt_path) else 'chromedriver'
+            chromedriver_path = (
+                alt_path if os.path.exists(alt_path) else 'chromedriver'
+            )
         service = Service(chromedriver_path)
     else:
         service = Service(ChromeDriverManager().install())
