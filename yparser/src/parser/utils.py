@@ -1,5 +1,6 @@
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 
 from yparser.src.parser.js_code import JS_DROP_FILE
 from yparser.src.consts import IN_COLAB
@@ -18,9 +19,10 @@ def init_wd(headless=True):
         chrome_options.add_argument('--disable-dev-shm-usage')
     if IN_COLAB:
         download_incolab_chromedriver()
-        wd = webdriver.Chrome('chromedriver', options=chrome_options)
+        service = Service('chromedriver')
     else:
-        wd = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=chrome_options)
+        service = Service(ChromeDriverManager().install())
+    wd = webdriver.Chrome(service=service, options=chrome_options)
     return wd
 
 
