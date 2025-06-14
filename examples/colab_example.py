@@ -1,5 +1,8 @@
 """Google Colab example for yparser.
 This script shows how to parse a few image URLs on Colab.
+
+`YParser` automatically installs ChromeDriver when running in Colab, so no
+manual setup is required.
 """
 
 from yparser.parser import YParser
